@@ -4,8 +4,8 @@ namespace MusicRecommendationApp.Data.Repository.Contract
 {
     public interface IRepository<T> where T : BaseEntity
     {
-        Task<T> GetByIdAsync(int id);
+        T GetById(int id);
 
-        Task<ICollection<T>> GetAllAsync();
+        ICollection<T> GetAll();
     }
 }
