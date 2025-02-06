@@ -6,7 +6,6 @@ using NReco.CF.Taste.Impl.Model;
 using NReco.CF.Taste.Impl.Recommender;
 using NReco.CF.Taste.Impl.Similarity;
 using NReco.CF.Taste.Model;
-using System;
 
 namespace MusicRecommendationApp.Services
 {
@@ -21,9 +20,9 @@ namespace MusicRecommendationApp.Services
             _ratingRepository = ratingRepository;
         }
 
-        public List<Music> GetRecommendations(int userId)
+        public async Task<List<Music>> GetRecommendationsAsync(int userId)
         {
-            var dataModel = LoadDataModel();
+            var dataModel = await LoadDataModelAsync();
 
             //This tool figures out how similar music are based on how users have rated them.
             var similarity = new LogLikelihoodSimilarity(dataModel);
@@ -35,18 +34,23 @@ namespace MusicRecommendationApp.Services
             var recommendedItems = recommender.Recommend(userId, 5, null);
 
             //Map recommended item IDs to Music objects
-            var recommendedMusic = recommendedItems
-                .Select(ri => _musicRepository.GetById((int)ri.GetItemID()))
-                .Where(m => m != null)
-                .ToList();
+            var recommendedMusic = new List<Music>();
+            foreach (var ri in recommendedItems)
+            {
+                var music = await _musicRepository.GetByIdAsync((int)ri.GetItemID());
+                if (music != null)
+                {
+                    recommendedMusic.Add(music);
+                }
+            }
 
             return recommendedMusic;
         }
 
         //Get all the ratings from the database and organize them in a way the recommendation system can understand.
-        public IDataModel LoadDataModel()
+        public async Task<IDataModel> LoadDataModelAsync()
         {
-            var ratings = _ratingRepository.GetAll().ToList();
+            var ratings = await _ratingRepository.GetAllAsync();
             var data = new FastByIDMap<IList<IPreference>>();
 
             foreach (var rating in ratings)

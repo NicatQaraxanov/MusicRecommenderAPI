@@ -5,8 +5,8 @@ namespace MusicRecommendationApp.Services.Contract
 {
     public interface IRecommendationService
     {
-        List<Music> GetRecommendations(int userId);
+        Task<List<Music>> GetRecommendationsAsync(int userId);
 
-        IDataModel LoadDataModel();
+        Task<IDataModel> LoadDataModelAsync();
     }
 }

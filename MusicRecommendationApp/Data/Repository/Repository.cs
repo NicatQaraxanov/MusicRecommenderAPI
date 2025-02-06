@@ -15,14 +15,14 @@ namespace MusicRecommendationApp.Data.Repository
             _dbSet = _context.Set<T>();
         }
 
-        public ICollection<T> GetAll()
+        public async Task<ICollection<T>> GetAllAsync()
         {
-            return _dbSet.ToList();
+            return await _dbSet.ToListAsync();
         }
 
-        public T GetById(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            return _dbSet.FirstOrDefault(d => d.Id == id);
+            return await _dbSet.FirstOrDefaultAsync(d => d.Id == id);
         }
     }
 }
